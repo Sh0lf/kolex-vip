@@ -20,6 +20,7 @@ const MarketResults = ({
 }) => {
 	const { user } = useContext(UserContext);
 	const [hideBadDeals, setHideBadDeals] = useState(false);
+	const [sortMethod, setSortMethod] = useState("mint");
 
 	const suffix = filter.sigsOnly
 		? "Signatures"
@@ -28,11 +29,39 @@ const MarketResults = ({
 		: `[${filter.batch}${filter.min}-${filter.batch}${filter.max}]`;
 
 	const uniqResults = uniqBy(
-		sortBy(results, [
-			(o) => (o.card ? o.card.mintBatch : o.sticker.mintBatch),
-			(o) => (o.card ? o.card.mintNumber : o.sticker.mintNumber),
-			(o) => (o.card ? o.card.cardTemplateId : o.stickerTemplateId),
-		]),
+		sortBy(
+			results,
+			sortMethod === "mint"
+				? [
+						(o) => (o.card || o.sticker).mintBatch,
+						(o) => (o.card || o.sticker).mintNumber,
+						(o) => o.card?.cardTemplateId || o.stickerTemplateId,
+				  ]
+				: sortMethod === "price"
+				? [
+						(o) => Number(o.price),
+						(o) => (o.card || o.sticker).mintBatch,
+						(o) => (o.card || o.sticker).mintNumber,
+						(o) => o.card?.cardTemplateId || o.stickerTemplateId,
+				  ]
+				: sortMethod === "point"
+				? [
+						(o) => -Number(Math.max(Number(o.delta), 0)),
+						(o) => Number(o.price),
+						(o) => (o.card || o.sticker).mintBatch,
+						(o) => (o.card || o.sticker).mintNumber,
+						(o) => o.card?.cardTemplateId || o.stickerTemplateId,
+				  ]
+				: sortMethod === "ppp"
+				? [
+						(o) => -(Math.max(Number(o.delta), 0) / Number(o.price)),
+						(o) => Number(o.price),
+						(o) => (o.card || o.sticker).mintBatch,
+						(o) => (o.card || o.sticker).mintNumber,
+						(o) => o.card?.cardTemplateId || o.stickerTemplateId,
+				  ]
+				: []
+		),
 		(o) => o.marketId
 	);
 
@@ -75,9 +104,26 @@ const MarketResults = ({
 			}
 			escapeClose={false}
 		>
+			<div className='m-2'>
+				<label htmlFor='sort' className='text-gray-800 dark:text-gray-200'>
+					Sort By:
+				</label>
+				<select
+					name='sort'
+					id='sort'
+					className='dropdown mx-2 my-1 sm:mb-0'
+					onChange={(e) => setSortMethod(e.target.value)}
+					value={sortMethod}
+				>
+					<option value='mint'>Mint</option>
+					<option value='price'>Price</option>
+					<option value='point'>Point gain</option>
+					<option value='ppp'>Point/Price</option>
+				</select>
+			</div>
 			<div className='max-h-full overflow-auto'>
 				<table className='w-full table-auto'>
-					<thead className='text-gray-custom bg-gray-200 dark:bg-gray-700'>
+					<thead className='text-gray-custom sticky top-0 z-10 bg-gray-200 dark:bg-gray-700'>
 						<tr>
 							<th className='table-cell'>Mint</th>
 							<th className='table-cell'>Title</th>
@@ -113,16 +159,17 @@ const MarketResults = ({
 								onChange={(e) => setHideBadDeals(e.target.checked)}
 								className='cursor-pointer accent-primary-600'
 							/>
-							<label htmlFor='badDeals' className='text-gray-custom ml-1 cursor-pointer'>
+							<label htmlFor='badDeals' className='text-gray-custom ml-1 w-min cursor-pointer sm:w-auto'>
 								Hide bad deals
 							</label>
 							<Tooltip
 								direction='right'
-								text='Hide items that have a better mint and cheaper alternative in the results'
+								text='Hide items that have a better mint and cheaper alternative in the results. Might not show expected results when using other sorting methods.'
 							/>
 						</div>
 						<span className='inline-flex items-center text-yellow-500'>
-							<FaSignature className='mr-2' /> Signed Item
+							<FaSignature className='mr-2' /> Signed
+							<span className='ml-1 hidden sm:block'>Item</span>
 						</span>
 					</div>
 					<div className='ml-auto inline-flex gap-4'>

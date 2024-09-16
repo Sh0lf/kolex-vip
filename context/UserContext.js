@@ -7,6 +7,7 @@ const UserContextProvider = (props) => {
 	const [user, setUser] = useState(null); // user object
 	const [initialLoading, setInitialLoading] = useState(true); // used to show loading screen on first load and redirect
 	const [categoryId, setCategoryId] = useState(null);
+	const [categories, setCategories] = useState([]);
 	const [packGalleryColumns, setPackGalleryColumns] = useState(null);
 	const router = useRouter();
 
@@ -60,7 +61,7 @@ const UserContextProvider = (props) => {
 			console.log("Category ID: ", categoryId);
 			switch (categoryId) {
 				case "1":
-					document.documentElement.classList.add("theme-cs");
+					document.documentElement.classList.add("theme-csgo");
 					break;
 				case "2":
 					document.documentElement.classList.add("theme-streamers");
@@ -77,8 +78,11 @@ const UserContextProvider = (props) => {
 				case "106":
 					document.documentElement.classList.add("theme-hiroquest");
 					break;
+				case "107":
+					document.documentElement.classList.add("theme-csc");
+					break;
 				default:
-					document.documentElement.classList.add("theme-cs");
+					document.documentElement.classList.add("theme-csgo");
 					break;
 			}
 		} else {
@@ -96,6 +100,8 @@ const UserContextProvider = (props) => {
 				setCategoryId,
 				packGalleryColumns,
 				setPackGalleryColumns,
+				categories,
+				setCategories,
 			}}
 		>
 			{props.children}

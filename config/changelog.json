@@ -1,6 +1,34 @@
 {
 	"changelog": [
 		{
+			"version": "2.10.0",
+			"date": "2024-09-14",
+			"changes": [
+				"Support for Android (yay!). If you find any bugs, please let me know.",
+				"Navbar menu now opens on hover. (you'll get used to it).",
+				"New category selection menu.",
+				"Added 'any' mint filter for minssearch."
+			]
+		},
+		{
+			"version": "2.9.5",
+			"date": "2024-09-13",
+			"changes": [
+				"Replaced the SK category with CS China.",
+				"Added sort option to mintsearch market results.",
+				"History page now shows progress count while searching."
+			]
+		},
+		{
+			"version": "2.9.4",
+			"date": "2024-09-11",
+			"changes": [
+				"Optimiezd the performance of scanner results.",
+				"Added Kolex link in the login page.",
+				"Implemented craft limits."
+			]
+		},
+		{
 			"version": "2.9.3",
 			"date": "2024-09-09",
 			"changes": [
